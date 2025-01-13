@@ -1,3 +1,6 @@
+mod vector2;
+use vector2::Vector2;
+
 enum Phone {
     Vowel(Vowel),
     Consonant(Consonant),
@@ -19,10 +22,6 @@ impl Phone {
     } 
 }
 
-struct Vector2 {
-    x: f32,
-    y: f32,
-}
 
 struct Vowel {
     pos: Vector2,
