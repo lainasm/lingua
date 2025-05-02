@@ -62,6 +62,13 @@ impl Phone {
         }
     } 
 
+    pub fn transcription(&self) -> char {
+        match self {
+            Phone::Vowel(x) => x.transcription(),
+            Phone::Consonant(x) => x.transcription(),
+        }
+    }
+
     pub fn from(c: char) -> Phone {
         if let Some((a, b, c)) = VOWEL_CHART.iter().find(|(_, c2, _)| c == *c2) {
             Phone::Vowel(Vowel {
@@ -81,6 +88,18 @@ impl Phone {
 pub struct Vowel {
     pos: Vector2,
     rounded: bool,
+}
+
+impl Vowel {
+    pub fn transcription(&self) -> char {
+        'a'
+    }
+}
+
+impl Consonant {
+    pub fn transcription(&self) -> char {
+        'k'
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
