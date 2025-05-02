@@ -92,7 +92,12 @@ pub struct Vowel {
 
 impl Vowel {
     pub fn transcription(&self) -> char {
-        'a'
+        VOWEL_CHART.iter().filter(|(_, _, r)| *r == self.rounded).min_by(|(p, _, _), (p2, _, _)| {
+            let dist1 = self.pos.dist(*p);
+            let dist2 = self.pos.dist(*p2);
+
+            dist1.partial_cmp(&dist2).unwrap()
+        }).unwrap().1
     }
 }
 
