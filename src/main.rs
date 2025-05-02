@@ -1,7 +1,7 @@
 mod vector2;
 mod phones;
 use vector2::Vector2;
-use phones::Phone;
+use phones::{Consonant, Phone};
 
 #[derive(Debug)]
 struct Word {
@@ -27,4 +27,11 @@ fn main() {
     let word = Word::from("aieou");
     println!("{word:#?}");
     println!("{}", word.transcription());
+    let t = Consonant {
+        manner: phones::Manner::Plosive,
+        place: phones::ArtPlace::Velar,
+        voiced: phones::Voicing::Voiced,
+    };
+
+    println!("{}", t.transcription());
 }

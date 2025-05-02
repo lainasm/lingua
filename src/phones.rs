@@ -79,6 +79,7 @@ impl Phone {
             Phone::Consonant(Consonant {
                 place: ArtPlace::Bilabial,
                 manner: Manner::Plosive,
+                voiced: Voicing::Voiceless,
             })
         }
     }
@@ -103,14 +104,64 @@ impl Vowel {
 
 impl Consonant {
     pub fn transcription(&self) -> char {
-        'k'
+        match (self.place, self.manner, self.voiced) {
+            (ArtPlace::Bilabial, Manner::Nasal, _) => 'm',
+            (ArtPlace::Labiodental, Manner::Nasal, _) => 'ɱ',
+            (ArtPlace::Dental, Manner::Nasal, _) => 'n',
+            (ArtPlace::Retroflex, Manner::Nasal, _) => 'ɳ',
+            (ArtPlace::Palatal, Manner::Nasal, _) => 'ɲ',
+            (ArtPlace::Velar, Manner::Nasal, _) => 'ŋ',
+            (ArtPlace::Glottal, Manner::Nasal, _) => '0',
+            (ArtPlace::Bilabial, Manner::Plosive, Voicing::Voiceless) => 'p',
+            (ArtPlace::Bilabial, Manner::Plosive, Voicing::Voiced) => 'b',
+            (ArtPlace::Labiodental, Manner::Plosive, Voicing::Voiceless) => 'p',
+            (ArtPlace::Labiodental, Manner::Plosive, Voicing::Voiced) => 'b',
+            (ArtPlace::Dental, Manner::Plosive, Voicing::Voiceless) => 't',
+            (ArtPlace::Dental, Manner::Plosive, Voicing::Voiced) => 'd',
+            (ArtPlace::Retroflex, Manner::Plosive, Voicing::Voiceless) => 'ʈ',
+            (ArtPlace::Retroflex, Manner::Plosive, Voicing::Voiced) => 'ɖ',
+            (ArtPlace::Palatal, Manner::Plosive, Voicing::Voiceless) => 'c',
+            (ArtPlace::Palatal, Manner::Plosive, Voicing::Voiced) => 'ɟ',
+            (ArtPlace::Velar, Manner::Plosive, Voicing::Voiceless) => 'k',
+            (ArtPlace::Velar, Manner::Plosive, Voicing::Voiced) => 'g',
+            (ArtPlace::Glottal, Manner::Plosive, _) => 'ʔ',
+            (ArtPlace::Bilabial, Manner::Sibilant, _) => '0',
+            (ArtPlace::Labiodental, Manner::Sibilant, _) => '0',
+            (ArtPlace::Dental, Manner::Sibilant, Voicing::Voiceless) => 's',
+            (ArtPlace::Dental, Manner::Sibilant, Voicing::Voiced) => 'z',
+            (ArtPlace::Retroflex, Manner::Sibilant, Voicing::Voiceless) => 'ʂ',
+            (ArtPlace::Retroflex, Manner::Sibilant, Voicing::Voiced) => 'ʐ',
+            (ArtPlace::Palatal, Manner::Sibilant, Voicing::Voiceless) => 'ɕ',
+            (ArtPlace::Palatal, Manner::Sibilant, Voicing::Voiced) => 'ʑ',
+            (_, Manner::Sibilant, _) => '0',
+            (ArtPlace::Bilabial, Manner::Fricative, Voicing::Voiceless) => 'ɸ',
+            (ArtPlace::Bilabial, Manner::Fricative, Voicing::Voiced) => 'β',
+            (ArtPlace::Labiodental, Manner::Fricative, Voicing::Voiceless) => 'f',
+            (ArtPlace::Labiodental, Manner::Fricative, Voicing::Voiced) => 'v',
+            (ArtPlace::Dental, Manner::Fricative, Voicing::Voiceless) => 'θ',
+            (ArtPlace::Dental, Manner::Fricative, Voicing::Voiced) => 'ð',
+            (ArtPlace::Retroflex, Manner::Fricative, _) => 'ɻ',
+            (ArtPlace::Palatal, Manner::Fricative, Voicing::Voiceless) => 'ç',
+            (ArtPlace::Palatal, Manner::Fricative, Voicing::Voiced) => 'ʝ',
+            (ArtPlace::Velar, Manner::Fricative, Voicing::Voiceless) => 'x',
+            (ArtPlace::Velar, Manner::Fricative, Voicing::Voiced) => 'ɣ',
+            (ArtPlace::Glottal, Manner::Fricative, Voicing::Voiceless) => 'h',
+            (ArtPlace::Glottal, Manner::Fricative, Voicing::Voiced) => 'ɦ',
+        }
     }
 }
 
 #[derive(Debug, Clone, Copy)]
 pub struct Consonant {
-    place: ArtPlace,
-    manner: Manner,
+    pub place: ArtPlace,
+    pub manner: Manner,
+    pub voiced: Voicing,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum Voicing {
+    Voiceless,
+    Voiced,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -118,8 +169,7 @@ pub enum ArtPlace {
     Bilabial,
     Labiodental,
     Dental,
-    Alveolar,
-    Postalveolar,
+    Retroflex,
     Velar,
     Palatal,
     Glottal,
@@ -130,6 +180,5 @@ pub enum Manner {
     Plosive,
     Fricative,
     Nasal,
-    Glide,
-    Liquid,
+    Sibilant,
 }
