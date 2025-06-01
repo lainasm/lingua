@@ -27,11 +27,8 @@ fn main() {
     let word = Word::from("aieou");
     println!("{word:#?}");
     println!("{}", word.transcription());
-    let t = Consonant {
-        manner: phones::Manner::Plosive,
-        place: phones::ArtPlace::Velar,
-        voiced: phones::Voicing::Voiced,
-    };
+    let t = Phone::from('t');
+    println!("{:#?}", t);
 
     println!("{}", t.transcription());
 }

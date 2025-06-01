@@ -1,6 +1,9 @@
 use crate::Vector2;
 
-const VOWEL_CHART: [(Vector2, char, bool); 28] = [
+use std::sync::LazyLock;
+use std::collections::HashMap;
+
+static VOWEL_CHART: [(Vector2, char, bool); 28] = [
     (Vector2 { x: 0f32, y: 0f32 }, 'i', false),
     (Vector2 { x: 0f32, y: 0f32 }, 'y', true),
     (Vector2 { x: 1f32, y: 0f32 }, 'ɯ', false),
@@ -36,6 +39,85 @@ const VOWEL_CHART: [(Vector2, char, bool); 28] = [
     (Vector2 { x: 1f32, y: 1f32 }, 'ɑ', false),
     (Vector2 { x: 1f32, y: 1f32 }, 'ɒ', true),
 ];
+
+static CONSONANT_CHART: LazyLock<HashMap<(ArtPlace, Manner, Voicing), char>> = LazyLock::new(|| {
+    let chart = HashMap::from(
+        [
+        ((ArtPlace::Bilabial, Manner::Nasal, Voicing::Voiceless), 'm'),
+        ((ArtPlace::Bilabial, Manner::Nasal, Voicing::Voiced), 'm'),
+        ((ArtPlace::Labiodental, Manner::Nasal, Voicing::Voiceless), 'ɱ'),
+        ((ArtPlace::Labiodental, Manner::Nasal, Voicing::Voiced), 'ɱ'),
+        ((ArtPlace::Dental, Manner::Nasal, Voicing::Voiceless), 'n'),
+        ((ArtPlace::Dental, Manner::Nasal, Voicing::Voiced), 'n'),
+        ((ArtPlace::Retroflex, Manner::Nasal, Voicing::Voiceless), 'ɳ'),
+        ((ArtPlace::Retroflex, Manner::Nasal, Voicing::Voiced), 'ɳ'),
+        ((ArtPlace::Palatal, Manner::Nasal, Voicing::Voiceless), 'ɲ'),
+        ((ArtPlace::Palatal, Manner::Nasal, Voicing::Voiced), 'ɲ'),
+        ((ArtPlace::Velar, Manner::Nasal, Voicing::Voiceless), 'ŋ'),
+        ((ArtPlace::Velar, Manner::Nasal, Voicing::Voiced), 'ŋ'),
+        ((ArtPlace::Bilabial, Manner::Plosive, Voicing::Voiceless), 'p'),
+        ((ArtPlace::Bilabial, Manner::Plosive, Voicing::Voiced), 'b'),
+        ((ArtPlace::Labiodental, Manner::Plosive, Voicing::Voiceless), 'p'),
+        ((ArtPlace::Labiodental, Manner::Plosive, Voicing::Voiced), 'b'),
+        ((ArtPlace::Dental, Manner::Plosive, Voicing::Voiceless), 't'),
+        ((ArtPlace::Dental, Manner::Plosive, Voicing::Voiced), 'd'),
+        ((ArtPlace::Retroflex, Manner::Plosive, Voicing::Voiceless), 'ʈ'),
+        ((ArtPlace::Retroflex, Manner::Plosive, Voicing::Voiced), 'ɖ'),
+        ((ArtPlace::Palatal, Manner::Plosive, Voicing::Voiceless), 'c'),
+        ((ArtPlace::Palatal, Manner::Plosive, Voicing::Voiced), 'ɟ'),
+        ((ArtPlace::Velar, Manner::Plosive, Voicing::Voiceless), 'k'),
+        ((ArtPlace::Velar, Manner::Plosive, Voicing::Voiced), 'g'),
+        ((ArtPlace::Glottal, Manner::Plosive, Voicing::Voiceless), 'ʔ'),
+        ((ArtPlace::Glottal, Manner::Plosive, Voicing::Voiced), 'ʔ'),
+        ((ArtPlace::Dental, Manner::Sibilant, Voicing::Voiceless), 's'),
+        ((ArtPlace::Dental, Manner::Sibilant, Voicing::Voiced), 'z'),
+        ((ArtPlace::Retroflex, Manner::Sibilant, Voicing::Voiceless), 'ʂ'),
+        ((ArtPlace::Retroflex, Manner::Sibilant, Voicing::Voiced), 'ʐ'),
+        ((ArtPlace::Palatal, Manner::Sibilant, Voicing::Voiceless), 'ɕ'),
+        ((ArtPlace::Palatal, Manner::Sibilant, Voicing::Voiced), 'ʑ'),
+        ((ArtPlace::Bilabial, Manner::Fricative, Voicing::Voiceless), 'ɸ'),
+        ((ArtPlace::Bilabial, Manner::Fricative, Voicing::Voiced), 'β'),
+        ((ArtPlace::Labiodental, Manner::Fricative, Voicing::Voiceless), 'f'),
+        ((ArtPlace::Labiodental, Manner::Fricative, Voicing::Voiced), 'v'),
+        ((ArtPlace::Dental, Manner::Fricative, Voicing::Voiceless), 'θ'),
+        ((ArtPlace::Dental, Manner::Fricative, Voicing::Voiced), 'ð'),
+        ((ArtPlace::Retroflex, Manner::Fricative, Voicing::Voiceless), 'ɻ'),
+        ((ArtPlace::Retroflex, Manner::Fricative, Voicing::Voiced), 'ɻ'),
+        ((ArtPlace::Palatal, Manner::Fricative, Voicing::Voiceless), 'ç'),
+        ((ArtPlace::Palatal, Manner::Fricative, Voicing::Voiced), 'ʝ'),
+        ((ArtPlace::Velar, Manner::Fricative, Voicing::Voiceless), 'x'),
+        ((ArtPlace::Velar, Manner::Fricative, Voicing::Voiced), 'ɣ'),
+        ((ArtPlace::Glottal, Manner::Fricative, Voicing::Voiceless), 'h'),
+        ((ArtPlace::Glottal, Manner::Fricative, Voicing::Voiced), 'ɦ'),
+        ((ArtPlace::Labiodental, Manner::Approximant, Voicing::Voiceless), 'ʋ'),
+        ((ArtPlace::Labiodental, Manner::Approximant, Voicing::Voiced), 'ʋ'),
+        ((ArtPlace::Dental, Manner::Approximant, Voicing::Voiceless), 'ɹ'),
+        ((ArtPlace::Dental, Manner::Approximant, Voicing::Voiced), 'ɹ'),
+        ((ArtPlace::Retroflex, Manner::Approximant, Voicing::Voiceless), 'ɻ'),
+        ((ArtPlace::Retroflex, Manner::Approximant, Voicing::Voiced), 'ɻ'),
+        ((ArtPlace::Palatal, Manner::Approximant, Voicing::Voiceless), 'j'),
+        ((ArtPlace::Palatal, Manner::Approximant, Voicing::Voiced), 'j'),
+        ((ArtPlace::Velar, Manner::Approximant, Voicing::Voiceless), 'ɰ'),
+        ((ArtPlace::Velar, Manner::Approximant, Voicing::Voiced), 'ɰ'),
+        ((ArtPlace::Labiodental, Manner::Tap, Voicing::Voiceless), 'ⱱ'),
+        ((ArtPlace::Labiodental, Manner::Tap, Voicing::Voiced), 'ⱱ'),
+        ((ArtPlace::Dental, Manner::Tap, Voicing::Voiceless), 'ɾ'),
+        ((ArtPlace::Dental, Manner::Tap, Voicing::Voiced), 'ɾ'),
+        ((ArtPlace::Retroflex, Manner::Tap, Voicing::Voiceless), 'ɽ'),
+        ((ArtPlace::Retroflex, Manner::Tap, Voicing::Voiced), 'ɽ'),
+        ((ArtPlace::Bilabial, Manner::Trill, Voicing::Voiceless), 'ʙ'),
+        ((ArtPlace::Bilabial, Manner::Trill, Voicing::Voiced), 'ʙ'),
+        ((ArtPlace::Dental, Manner::Trill, Voicing::Voiceless), 'r'),
+        ((ArtPlace::Dental, Manner::Trill, Voicing::Voiced), 'r'),
+        ((ArtPlace::Retroflex, Manner::Trill, Voicing::Voiceless), 'ɽ'),
+        ((ArtPlace::Retroflex, Manner::Trill, Voicing::Voiced), 'ɽ'),
+        ((ArtPlace::Dental, Manner::Lateral, Voicing::Voiceless), 'l'),
+        ((ArtPlace::Dental, Manner::Lateral, Voicing::Voiced), 'l'),
+        ]
+    );
+
+    chart
+});
 
 pub struct Morpheme {
     pub phones: Vec<Phone>,
@@ -76,10 +158,12 @@ impl Phone {
                 rounded: *c,
             })
         } else {
+            let ((a, m, v), _) = CONSONANT_CHART.iter().find(|((_, _, _), c2)| c == **c2).unwrap();
+
             Phone::Consonant(Consonant {
-                place: ArtPlace::Bilabial,
-                manner: Manner::Plosive,
-                voiced: Voicing::Voiceless,
+                place: *a,
+                manner: *m,
+                voiced: *v,
             })
         }
     }
@@ -104,50 +188,7 @@ impl Vowel {
 
 impl Consonant {
     pub fn transcription(&self) -> char {
-        match (self.place, self.manner, self.voiced) {
-            (ArtPlace::Bilabial, Manner::Nasal, _) => 'm',
-            (ArtPlace::Labiodental, Manner::Nasal, _) => 'ɱ',
-            (ArtPlace::Dental, Manner::Nasal, _) => 'n',
-            (ArtPlace::Retroflex, Manner::Nasal, _) => 'ɳ',
-            (ArtPlace::Palatal, Manner::Nasal, _) => 'ɲ',
-            (ArtPlace::Velar, Manner::Nasal, _) => 'ŋ',
-            (ArtPlace::Glottal, Manner::Nasal, _) => '0',
-            (ArtPlace::Bilabial, Manner::Plosive, Voicing::Voiceless) => 'p',
-            (ArtPlace::Bilabial, Manner::Plosive, Voicing::Voiced) => 'b',
-            (ArtPlace::Labiodental, Manner::Plosive, Voicing::Voiceless) => 'p',
-            (ArtPlace::Labiodental, Manner::Plosive, Voicing::Voiced) => 'b',
-            (ArtPlace::Dental, Manner::Plosive, Voicing::Voiceless) => 't',
-            (ArtPlace::Dental, Manner::Plosive, Voicing::Voiced) => 'd',
-            (ArtPlace::Retroflex, Manner::Plosive, Voicing::Voiceless) => 'ʈ',
-            (ArtPlace::Retroflex, Manner::Plosive, Voicing::Voiced) => 'ɖ',
-            (ArtPlace::Palatal, Manner::Plosive, Voicing::Voiceless) => 'c',
-            (ArtPlace::Palatal, Manner::Plosive, Voicing::Voiced) => 'ɟ',
-            (ArtPlace::Velar, Manner::Plosive, Voicing::Voiceless) => 'k',
-            (ArtPlace::Velar, Manner::Plosive, Voicing::Voiced) => 'g',
-            (ArtPlace::Glottal, Manner::Plosive, _) => 'ʔ',
-            (ArtPlace::Bilabial, Manner::Sibilant, _) => '0',
-            (ArtPlace::Labiodental, Manner::Sibilant, _) => '0',
-            (ArtPlace::Dental, Manner::Sibilant, Voicing::Voiceless) => 's',
-            (ArtPlace::Dental, Manner::Sibilant, Voicing::Voiced) => 'z',
-            (ArtPlace::Retroflex, Manner::Sibilant, Voicing::Voiceless) => 'ʂ',
-            (ArtPlace::Retroflex, Manner::Sibilant, Voicing::Voiced) => 'ʐ',
-            (ArtPlace::Palatal, Manner::Sibilant, Voicing::Voiceless) => 'ɕ',
-            (ArtPlace::Palatal, Manner::Sibilant, Voicing::Voiced) => 'ʑ',
-            (_, Manner::Sibilant, _) => '0',
-            (ArtPlace::Bilabial, Manner::Fricative, Voicing::Voiceless) => 'ɸ',
-            (ArtPlace::Bilabial, Manner::Fricative, Voicing::Voiced) => 'β',
-            (ArtPlace::Labiodental, Manner::Fricative, Voicing::Voiceless) => 'f',
-            (ArtPlace::Labiodental, Manner::Fricative, Voicing::Voiced) => 'v',
-            (ArtPlace::Dental, Manner::Fricative, Voicing::Voiceless) => 'θ',
-            (ArtPlace::Dental, Manner::Fricative, Voicing::Voiced) => 'ð',
-            (ArtPlace::Retroflex, Manner::Fricative, _) => 'ɻ',
-            (ArtPlace::Palatal, Manner::Fricative, Voicing::Voiceless) => 'ç',
-            (ArtPlace::Palatal, Manner::Fricative, Voicing::Voiced) => 'ʝ',
-            (ArtPlace::Velar, Manner::Fricative, Voicing::Voiceless) => 'x',
-            (ArtPlace::Velar, Manner::Fricative, Voicing::Voiced) => 'ɣ',
-            (ArtPlace::Glottal, Manner::Fricative, Voicing::Voiceless) => 'h',
-            (ArtPlace::Glottal, Manner::Fricative, Voicing::Voiced) => 'ɦ',
-        }
+        *CONSONANT_CHART.get(&(self.place, self.manner, self.voiced)).unwrap_or(&'0')
     }
 }
 
@@ -158,13 +199,13 @@ pub struct Consonant {
     pub voiced: Voicing,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
 pub enum Voicing {
     Voiceless,
     Voiced,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
 pub enum ArtPlace {
     Bilabial,
     Labiodental,
@@ -175,10 +216,14 @@ pub enum ArtPlace {
     Glottal,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
 pub enum Manner {
     Plosive,
     Fricative,
     Nasal,
     Sibilant,
+    Approximant,
+    Tap,
+    Trill,
+    Lateral,
 }
