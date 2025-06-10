@@ -1,5 +1,6 @@
 use crate::Vector2;
 
+use std::io::{stdout, Write};
 use std::sync::LazyLock;
 use std::collections::HashMap;
 
@@ -86,6 +87,7 @@ static CONSONANT_CHART: LazyLock<HashMap<(ArtPlace, Manner, Voicing), char>> = L
         ((ArtPlace::Palatal, Manner::Fricative, Voicing::Voiceless), 'ç'),
         ((ArtPlace::Palatal, Manner::Fricative, Voicing::Voiced), 'ʝ'),
         ((ArtPlace::Velar, Manner::Fricative, Voicing::Voiceless), 'x'),
+        ((ArtPlace::Velar, Manner::Fricative, Voicing::Voiceless), 'ɧ'),
         ((ArtPlace::Velar, Manner::Fricative, Voicing::Voiced), 'ɣ'),
         ((ArtPlace::Glottal, Manner::Fricative, Voicing::Voiceless), 'h'),
         ((ArtPlace::Glottal, Manner::Fricative, Voicing::Voiced), 'ɦ'),
@@ -113,6 +115,8 @@ static CONSONANT_CHART: LazyLock<HashMap<(ArtPlace, Manner, Voicing), char>> = L
         ((ArtPlace::Retroflex, Manner::Trill, Voicing::Voiced), 'ɽ'),
         ((ArtPlace::Dental, Manner::Lateral, Voicing::Voiceless), 'l'),
         ((ArtPlace::Dental, Manner::Lateral, Voicing::Voiced), 'l'),
+        ((ArtPlace::Retroflex, Manner::Lateral, Voicing::Voiceless), 'ɭ'),
+        ((ArtPlace::Retroflex, Manner::Lateral, Voicing::Voiced), 'ɭ'),
         ]
     );
 
@@ -123,7 +127,7 @@ pub struct Morpheme {
     pub phones: Vec<Phone>,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Phone {
     Vowel(Vowel),
     Consonant(Consonant),
@@ -134,6 +138,20 @@ impl Phone {
         match self {
             Phone::Vowel(_) => true,
             Phone::Consonant(_) => false,
+        }
+    }
+
+    pub fn is_front_vowel(&self) -> bool {
+        match self {
+            Phone::Vowel(v) => v.is_front_vowel(),
+            Phone::Consonant(_) => false,
+        }
+    }
+
+    pub fn is_long(&self) -> bool {
+        match self {
+            Phone::Vowel(v) => v.long,
+            Phone::Consonant(c) => c.long,
         }
     }
 
@@ -156,6 +174,26 @@ impl Phone {
             Phone::Vowel(Vowel {
                 pos: *a,
                 rounded: *c,
+                long: false,
+            })
+        } else {
+            std::io::stdout().flush().unwrap();
+            let ((a, m, v), _) = CONSONANT_CHART.iter().find(|((_, _, _), c2)| c == **c2).unwrap();
+
+            Phone::Consonant(Consonant {
+                place: *a,
+                manner: *m,
+                voiced: *v,
+                long: false,
+            })
+        }
+    }
+    pub fn from_long(c: char) -> Phone {
+        if let Some((a, b, c)) = VOWEL_CHART.iter().find(|(_, c2, _)| c == *c2) {
+            Phone::Vowel(Vowel {
+                pos: *a,
+                rounded: *c,
+                long: true,
             })
         } else {
             let ((a, m, v), _) = CONSONANT_CHART.iter().find(|((_, _, _), c2)| c == **c2).unwrap();
@@ -164,15 +202,17 @@ impl Phone {
                 place: *a,
                 manner: *m,
                 voiced: *v,
+                long: true,
             })
         }
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vowel {
-    pos: Vector2,
-    rounded: bool,
+    pub pos: Vector2,
+    pub rounded: bool,
+    pub long: bool,
 }
 
 impl Vowel {
@@ -184,6 +224,10 @@ impl Vowel {
             dist1.partial_cmp(&dist2).unwrap()
         }).unwrap().1
     }
+
+    pub fn is_front_vowel(&self) -> bool {
+        self.pos.x < 0.7f32
+    }
 }
 
 impl Consonant {
@@ -192,11 +236,12 @@ impl Consonant {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Consonant {
     pub place: ArtPlace,
     pub manner: Manner,
     pub voiced: Voicing,
+    pub long: bool,
 }
 
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq)]
